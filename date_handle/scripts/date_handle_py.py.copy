@@ -1,0 +1,50 @@
+#!/usr/bin/python
+#-*- coding:UTF-8 -*-
+
+import rospy
+import socket
+import time
+from date_handle.msg import ctrl_cmd
+
+rospy.init_node('date_handle') # 初始化节点
+cmd_date = rospy.Publisher('ctrl_cmd',ctrl_cmd,queue_size = 1) # 指定连接话题
+ctrl_cmd_date = ctrl_cmd()
+rate = rospy.Rate(10)
+def date_pub(gear, velocity, steering, Brake):
+    ctrl_cmd_date.ctrl_cmd_gear = gear
+    ctrl_cmd_date.ctrl_cmd_velocity = velocity
+    ctrl_cmd_date.ctrl_cmd_steering = steering
+    ctrl_cmd_date.ctrl_cmd_Brake = Brake
+
+
+if __name__ == '__main__':
+    try:
+        flag = 1
+        while not rospy.is_shutdown():
+            if(flag):
+                date_pub(4, 1.5, 15, 0)
+                cmd_date.publish(ctrl_cmd_date)
+                flag = 0
+            else:
+                date_pub(2, 1.0, -15, 0)
+                cmd_date.publish(ctrl_cmd_date)
+                flag = 1
+            time.sleep(0.2)
+    except rospy.ROSInterruptException:
+        pass
+
+
+# def creat_socket():
+    # HOST = '192.168.0.109'
+    # PORT = 40102
+    # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # s.connect((HOST, PORT))
+# 
+    # return s
+# 
+# s = creat_socket()
+# while(True):
+# 
+    # date = s.recv(120)
+    # date = date.decode('UTF-8')
+    # print(date)
